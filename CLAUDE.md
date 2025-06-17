@@ -149,14 +149,48 @@ const videoUrl = await videoGenerator.waitForCompletion(videoResult.data.task_id
 7. ✅ CI/CD (GitHub Actions → Vercel)
 
 ### 環境変数設定
-Vercelダッシュボードで設定が必要:
-- `NEXT_PUBLIC_API_URL`: バックエンドAPIのURL（Renderでデプロイ予定）
+Vercelで設定済み:
+- `KLING_ACCESS_KEY`: KLINGのアクセスキー（サーバーサイド）
+- `KLING_SECRET_KEY`: KLINGのシークレットキー（サーバーサイド）
+
+未設定（オプション）:
+- `NEXT_PUBLIC_API_URL`: バックエンドAPIのURL（Veo用、現在は不要）
+
+### 実装完了機能（更新）
+1. ✅ **KLING動画生成の独立実装**
+   - Vercel API Routes経由でKLING APIを直接呼び出し
+   - バックエンドなしで動画生成可能
+   - JWT認証実装済み
+   - エンドポイント:
+     - `/api/generate-video`: 動画生成開始
+     - `/api/video-status/[taskId]`: ステータス確認
+
+### API仕様（フロントエンド）
+```typescript
+// 動画生成
+POST /api/generate-video
+{
+  imageUrl: string,  // Base64またはHTTP URL
+  prompt: string,    // モーション説明
+  duration?: number  // 動画長（デフォルト: 5秒）
+}
+
+// ステータス確認
+GET /api/video-status/{taskId}
+Response: {
+  taskId: string,
+  status: 'pending' | 'processing' | 'completed' | 'failed',
+  progress?: number,
+  videoUrl?: string,
+  error?: string
+}
+```
 
 ### 次のステップ
-1. バックエンドAPIの実装（Render）
-2. 環境変数の設定
+1. O3による画像解析とYAML編集機能の実装
+2. Veo APIの統合（バックエンド実装時）
 3. Google Sheets連携の実装
 
 ---
-*最終更新: 2025-06-17 11:05*: フロントエンドVercelデプロイ完了
+*最終更新: 2025-06-17 11:30*: KLING動画生成API独立実装完了
 
