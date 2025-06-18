@@ -1,0 +1,11 @@
+{
+  "notifications": {
+    "enabled": true,
+    "taskCompletion": true,
+    "buildStatus": true,
+    "testResults": true,
+    "deployments": true,
+    "sound": true,
+    "desktop": true
+  }
+}

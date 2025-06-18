@@ -1,0 +1,6 @@
+[submodule "image-to-video-backend"]
+	path = image-to-video-backend
+	url = https://github.com/senjinshuji/image-to-video-backend.git
+[submodule "image-to-video-frontend"]
+	path = image-to-video-frontend
+	url = https://github.com/senjinshuji/image-to-video-frontend.git

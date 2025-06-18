@@ -3,8 +3,35 @@
 ## プロジェクト概要
 - **プロジェクト名**: Image to Video
 - **目的**: 画像から動画への変換アプリケーション
-- **GitHub**: https://github.com/senjinshuji/imagetovideo
+- **GitHub フロントエンド**: https://github.com/senjinshuji/image-to-video-frontend
+- **GitHub バックエンド**: https://github.com/senjinshuji/image-to-video-backend
 - **開始日**: 2025-06-16
+
+## 最新の開発状況 (2025-06-17 12:14)
+
+### 完了したタスク
+- ✅ フロントエンド実装完了
+  - Next.js 14 (App Router)
+  - 画像生成機能 (OpenAI統合)
+  - 動画生成機能 (KLING/Veo統合)
+  - O3画像解析とYAML編集機能
+  - レスポンシブUI
+
+- ✅ バックエンド実装完了
+  - FastAPI + async SQLAlchemy
+  - 完全なREST API実装
+  - ジョブ管理システム
+  - OpenAI/KLING統合
+  - Render対応設定
+
+- ✅ TypeScriptエラー修正
+  - VideoPreviewPanel: motion_text → motion_prompt
+
+### 次のステップ
+1. **Renderへのバックエンドデプロイ** (DEPLOYMENT.md参照)
+2. Vercel環境変数の更新 (NEXT_PUBLIC_API_URL)
+3. Google Sheets統合実装
+4. Veo API統合 (オプション)
 
 ## 実装済み機能
 
@@ -243,11 +270,74 @@ GET /api/video-status/{taskId}
   - KLING_SECRET_KEY
   - OPENAI_API_KEY
 
+## バックエンド実装（2025-06-17）
+
+### FastAPIバックエンド ✅
+- **GitHub**: https://github.com/senjinshuji/image-to-video-backend
+- **技術スタック**: FastAPI, SQLAlchemy (Async), PostgreSQL/SQLite
+- **デプロイ**: Render対応（render.yaml設定済み）
+
+### 実装完了機能
+1. **データベース設計**
+   - Row: Google Sheets連携用メインコンテナ
+   - ImageJob: 画像生成ジョブ管理
+   - VideoJob: 動画生成ジョブ管理
+
+2. **API実装**
+   - 全CRUD操作対応
+   - バックグラウンドジョブ処理
+   - 非同期処理対応
+
+3. **外部API統合**
+   - OpenAI: 画像生成・解析
+   - KLING: 動画生成（JWT認証実装済み）
+   - O3/GPT-4 Vision: 画像解析
+
+4. **フロントエンド統合**
+   - すべてのAPI呼び出しをバックエンドに移行
+   - 環境変数でバックエンドURL設定可能
+
+### バックエンド起動方法
+```bash
+cd image-to-video-backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env  # APIキーを設定
+./run.sh  # または: uvicorn app.main:app --reload
+```
+
+### API仕様書
+- Swagger UI: http://localhost:8000/api/v1/docs
+- ReDoc: http://localhost:8000/api/v1/redoc
+
 ### 次のステップ
-1. Veo APIの統合（バックエンド実装時）
-2. Google Sheets連携の実装
-3. 画像・動画管理機能の強化
+1. Renderへのバックエンドデプロイ
+2. フロントエンド環境変数の更新（本番バックエンドURL）
+3. Google Sheets連携の実装
+4. Veo API統合（オプション）
 
 ---
-*最終更新: 2025-06-17 12:15*: Phase 2完了 - 画像生成・O3解析・YAML編集機能実装
+*最終更新: 2025-06-18 10:48*: バックエンド実装完了・フロントエンド統合済み
+
+
+### 2025-06-17 セッション開始
+**開始時刻**: 20:12
+
+**前回からの継続事項**
+- 開発環境構築済み
+
+
+### 2025-06-17 セッション開始
+**開始時刻**: 20:12
+
+**前回からの継続事項**
+- 開発環境構築済み
+
+
+### 2025-06-18 セッション開始
+**開始時刻**: 10:48
+
+**前回からの継続事項**
+- 開発環境構築済み
 

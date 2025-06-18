@@ -1,0 +1,59 @@
+# Google Cloud Build configuration
+steps:
+  # Build backend image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/image-to-video-backend:$COMMIT_SHA', './image-to-video-backend']
+  
+  # Build frontend image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/image-to-video-frontend:$COMMIT_SHA', './image-to-video-frontend']
+  
+  # Push backend image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/image-to-video-backend:$COMMIT_SHA']
+  
+  # Push frontend image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/image-to-video-frontend:$COMMIT_SHA']
+  
+  # Deploy to Cloud Run (Backend)
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'image-to-video-backend'
+      - '--image=gcr.io/$PROJECT_ID/image-to-video-backend:$COMMIT_SHA'
+      - '--region=asia-northeast1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars=OPENAI_API_KEY=${_OPENAI_API_KEY},KLING_ACCESS_KEY=${_KLING_ACCESS_KEY},KLING_SECRET_KEY=${_KLING_SECRET_KEY}'
+      - '--add-cloudsql-instances=${_CLOUD_SQL_CONNECTION_NAME}'
+      - '--set-env-vars=DATABASE_URL=postgresql+asyncpg://postgres:${_DB_PASSWORD}@localhost:5432/image_to_video?host=/cloudsql/${_CLOUD_SQL_CONNECTION_NAME}'
+  
+  # Deploy to Cloud Run (Frontend)
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'image-to-video-frontend'
+      - '--image=gcr.io/$PROJECT_ID/image-to-video-frontend:$COMMIT_SHA'
+      - '--region=asia-northeast1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars=NEXT_PUBLIC_API_URL=https://image-to-video-backend-xxxxx-an.a.run.app/api/v1'
+
+images:
+  - 'gcr.io/$PROJECT_ID/image-to-video-backend:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/image-to-video-frontend:$COMMIT_SHA'
+
+substitutions:
+  _OPENAI_API_KEY: ''
+  _KLING_ACCESS_KEY: ''
+  _KLING_SECRET_KEY: ''
+  _CLOUD_SQL_CONNECTION_NAME: ''
+  _DB_PASSWORD: ''
+
+options:
+  logging: CLOUD_LOGGING_ONLY

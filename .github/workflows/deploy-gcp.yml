@@ -1,0 +1,42 @@
+name: Deploy to GCP
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: image-to-video-463301
+  REGION: asia-northeast1
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Configure Docker
+      run: |
+        gcloud auth configure-docker asia-northeast1-docker.pkg.dev
+
+    - name: Build and Deploy with Cloud Build
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        KLING_ACCESS_KEY: ${{ secrets.KLING_ACCESS_KEY }}
+        KLING_SECRET_KEY: ${{ secrets.KLING_SECRET_KEY }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      run: |
+        gcloud builds submit --config=cloudbuild.yaml \
+          --substitutions=_OPENAI_API_KEY="${OPENAI_API_KEY}",_KLING_ACCESS_KEY="${KLING_ACCESS_KEY}",_KLING_SECRET_KEY="${KLING_SECRET_KEY}",_CLOUD_SQL_CONNECTION_NAME="${{ secrets.CLOUD_SQL_CONNECTION_NAME }}",_DB_PASSWORD="${DB_PASSWORD}"

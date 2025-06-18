@@ -1,0 +1,43 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: image-to-video-backend
+  annotations:
+    run.googleapis.com/execution-environment: gen2
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/cloudsql-instances: YOUR_PROJECT_ID:asia-northeast1:image-to-video-db
+        run.googleapis.com/cpu-throttling: "false"
+    spec:
+      serviceAccountName: image-to-video-sa
+      containers:
+      - image: gcr.io/YOUR_PROJECT_ID/image-to-video-backend
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: db-url
+              key: url
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: openai-key
+              key: key
+        - name: KLING_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: kling-access
+              key: key
+        - name: KLING_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: kling-secret
+              key: key
+        resources:
+          limits:
+            cpu: "2"
+            memory: "2Gi"
