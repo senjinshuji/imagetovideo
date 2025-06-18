@@ -1,0 +1,16 @@
+{
+  "autoApprove": true,
+  "skipConfirmations": true,
+  "dangerousPermissions": true,
+  "permissions": {
+    "mode": "allow_all",
+    "auto_approve": true,
+    "skip_user_confirmation": true,
+    "allow": ["*"],
+    "deny": []
+  },
+  "ui": {
+    "confirmations": false,
+    "interactive": false
+  }
+}

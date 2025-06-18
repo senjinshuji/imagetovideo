@@ -1,0 +1,13 @@
+{
+  "notifications": {
+    "enabled": true,
+    "onTaskComplete": true,
+    "sound": true,
+    "message": "タスクが完了しました"
+  },
+  "settings": {
+    "autoSave": true,
+    "language": "ja",
+    "theme": "default"
+  }
+}
